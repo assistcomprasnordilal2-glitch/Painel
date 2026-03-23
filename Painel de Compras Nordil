@@ -1,56 +1,55 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Compras - Lucas & Wellida</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Compras - Lucas & Wellida</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --primary:#0b57d0; --bg:#f8f9fa; --red:#d93025; --green:#1e8e3e; --gray:#5f6368; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background:var(--bg); padding:20px; margin:0; }
+        .header { background: var(--primary); color: white; padding: 20px; margin-bottom: 20px; border-radius: 0 0 15px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .card { background:#fff; padding:20px; border-radius:10px; margin-bottom:20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .kpis { display:flex; gap:15px; flex-wrap:wrap; margin-bottom: 20px; }
+        .kpi { flex:1; min-width:200px; padding:20px; border-radius:12px; background:#fff; border-bottom: 4px solid var(--primary); }
+        .kpi span { color: var(--gray); font-size: 12px; text-transform: uppercase; font-weight: bold; }
+        .kpi div { font-size: 22px; font-weight: bold; margin-top: 5px; }
+        
+        .charts-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        canvas { max-height: 250px; }
 
-<style>
-:root { --primary:#0b57d0; --bg:#f8f9fa; --red:#d93025; --green:#1e8e3e; --gray:#5f6368; }
-body { font-family: 'Segoe UI', Arial, sans-serif; background:var(--bg); padding:20px; margin:0; }
-.header { background: var(--primary); color: white; padding: 20px; margin-bottom: 20px; border-radius: 0 0 15px 15px; display: flex; justify-content: space-between; align-items: center; }
-.card { background:#fff; padding:20px; border-radius:10px; margin-bottom:20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.kpis { display:flex; gap:15px; flex-wrap:wrap; margin-bottom: 20px; }
-.kpi { flex:1; min-width:200px; padding:20px; border-radius:12px; background:#fff; border-bottom: 4px solid var(--primary); }
-.kpi span { color: var(--gray); font-size: 12px; text-transform: uppercase; font-weight: bold; }
-.kpi div { font-size: 22px; font-weight: bold; margin-top: 5px; }
+        .controles { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+        input, select { padding:12px; border-radius:8px; border:1px solid #ddd; outline: none; font-size: 14px; }
+        input { flex: 2; min-width: 200px; }
+        select { flex: 1; min-width: 150px; cursor: pointer; background: white; }
+        
+        .btn-group { display: flex; gap: 8px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; color: white; transition: 0.3s; }
+        .btn-excel { background: #1d6f42; }
+        .btn-pdf { background: #b30b00; }
+        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
 
-.charts-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
-canvas { max-height: 250px; }
-
-.controles { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
-input, select { padding:12px; border-radius:8px; border:1px solid #ddd; outline: none; font-size: 14px; }
-input { flex: 2; min-width: 200px; }
-select { flex: 1; min-width: 150px; cursor: pointer; background: white; }
-
-.btn-group { display: flex; gap: 8px; }
-.btn { padding: 10px 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; color: white; transition: 0.3s; }
-.btn-excel { background: #1d6f42; }
-.btn-pdf { background: #b30b00; }
-.btn:hover { opacity: 0.8; transform: translateY(-1px); }
-
-.table-container { overflow-x: auto; }
-table { width:100%; border-collapse:collapse; min-width: 900px; }
-th, td { padding:12px; border-bottom:1px solid #eee; text-align: left; }
-th { background:#f1f3f4; color: var(--gray); text-transform: uppercase; font-size: 11px; position: sticky; top: 0; }
-.negativo { color:var(--red); font-weight:bold; }
-.positivo { color:var(--green); font-weight:bold; }
-.alerta-estoque { color: var(--red); font-weight: bold; }
-</style>
+        .table-container { overflow-x: auto; }
+        table { width:100%; border-collapse:collapse; min-width: 900px; }
+        th, td { padding:12px; border-bottom:1px solid #eee; text-align: left; }
+        th { background:#f1f3f4; color: var(--gray); text-transform: uppercase; font-size: 11px; position: sticky; top: 0; }
+        .negativo { color:var(--red); font-weight:bold; }
+        .positivo { color:var(--green); font-weight:bold; }
+        .alerta-estoque { color: var(--red); font-weight: bold; }
+    </style>
 </head>
-
 <body>
 
 <div class="header">
     <div>
-        <h1 style="margin:0;">Planejamento de Compras</h1>
-        <p style="margin:5px 0 0 0;">Gestão Lucas & Wellida</p>
+        <h1 style="margin:0; font-size: 22px;">Planejamento de Compras</h1>
+        <p style="margin:5px 0 0 0; opacity: 0.8; font-size: 14px;">Gestão Lucas & Wellida</p>
     </div>
     <div class="btn-group">
         <button class="btn btn-excel" onclick="exportarExcel()">📊 Excel</button>
@@ -66,19 +65,19 @@ th { background:#f1f3f4; color: var(--gray); text-transform: uppercase; font-siz
 
 <div class="charts-container">
     <div class="card">
-        <h3>Divisão por Meta de Compra</h3>
+        <h3 style="font-size:14px; color:var(--gray); margin-top:0;">Divisão por Meta de Compra (R$)</h3>
         <canvas id="chartPizza"></canvas>
     </div>
     <div class="card">
-        <h3>Faturamento por Comprador</h3>
+        <h3 style="font-size:14px; color:var(--gray); margin-top:0;">Faturamento por Comprador</h3>
         <canvas id="chartBarras"></canvas>
     </div>
 </div>
 
 <div class="card controles">
-    <input type="text" id="busca" placeholder="Buscar fornecedor..." oninput="filtrar()">
+    <input type="text" id="busca" placeholder="🔍 Buscar fornecedor..." oninput="filtrar()">
     <select id="filtro_comprador" onchange="filtrar()">
-        <option value="">Todos</option>
+        <option value="">👤 Todos os Compradores</option>
         <option value="LUCAS">LUCAS</option>
         <option value="WELLIDA">WELLIDA</option>
     </select>
@@ -86,7 +85,7 @@ th { background:#f1f3f4; color: var(--gray); text-transform: uppercase; font-siz
 
 <div class="card">
     <div class="table-container" id="tabela_area">
-        <div id="status_msg">Carregando dados...</div>
+        <div id="status_msg" style="text-align:center; padding: 40px; color: var(--gray);">Carregando banco de dados...</div>
     </div>
 </div>
 
@@ -101,13 +100,12 @@ function carregar() {
     Papa.parse(csvUrl, {
         download: true, header: true, skipEmptyLines: true,
         complete: function(results) {
-            console.log(results.data[0]);
-
             dadosOriginais = results.data.map(item => {
                 if (!item["FORNECEDOR"]) return null;
-
                 const fat = parseNum(item["FAT. TRI"]);
                 const est = parseNum(item["ESTOQUE"]);
+                
+                // Cálculo de Dias de Estoque (Baseado na média mensal do faturamento trimestral)
                 const vendaMensal = fat / 3;
                 const diasEstoque = vendaMensal > 0 ? (est / vendaMensal) * 30 : 0;
 
@@ -117,10 +115,9 @@ function carregar() {
                     fat: fat,
                     est: est,
                     dias: diasEstoque,
-                    orc: parseNum(item["META DE COMPRA"]) // ✅ ALTERADO AQUI
+                    orc: parseNum(item["ORÇAMENTO COMPRA"])
                 };
             }).filter(i => i !== null);
-
             filtrar();
         }
     });
@@ -135,43 +132,42 @@ function parseNum(v) {
 function filtrar() {
     const termo = document.getElementById("busca").value.toUpperCase();
     const comprador = document.getElementById("filtro_comprador").value;
-
+    
     dadosFiltrados = dadosOriginais.filter(i => {
-        return i.forn.includes(termo) && (comprador === "" || i.comp === comprador);
+        const bateNome = i.forn.includes(termo);
+        const bateComprador = comprador === "" || i.comp === comprador;
+        return bateNome && bateComprador;
     });
-
+    
     render(dadosFiltrados);
     atualizarGraficos(dadosFiltrados);
 }
 
 function render(lista) {
     let f=0, e=0, o=0;
-
-    let html = `<table><thead><tr>
-    <th>Comprador</th><th>Fornecedor</th><th>Faturamento</th>
-    <th>Estoque</th><th>Dias Estoque</th><th>Meta de Compra</th>
-    </tr></thead><tbody>`;
-
+    let html = `<table><thead><tr><th>Comprador</th><th>Fornecedor</th><th>Faturamento</th><th>Estoque</th><th>Dias Estoque</th><th>Meta de Compra</th></tr></thead><tbody>`;
+    
     lista.forEach(i => {
         f += i.fat; e += i.est; o += i.orc;
-
-        const alerta = (i.dias > 45 || i.dias < 30) ? 'alerta-estoque' : '';
+        
+        // Lógica de alerta em vermelho: > 45 ou < 30
+        const classeAlerta = (i.dias > 45 || i.dias < 30) ? 'alerta-estoque' : '';
 
         html += `<tr>
-        <td>${i.comp}</td>
-        <td><strong>${i.forn}</strong></td>
-        <td>R$ ${i.fat.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
-        <td>R$ ${i.est.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
-        <td class="${alerta}">${Math.round(i.dias)} dias</td>
-        <td class="${i.orc<0?'negativo':'positivo'}">R$ ${i.orc.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+            <td>${i.comp}</td>
+            <td><strong>${i.forn}</strong></td>
+            <td>R$ ${i.fat.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+            <td>R$ ${i.est.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
+            <td class="${classeAlerta}">${Math.round(i.dias)} dias</td>
+            <td class="${i.orc < 0 ? 'negativo' : 'positivo'}">R$ ${i.orc.toLocaleString('pt-BR', {minimumFractionDigits:2})}</td>
         </tr>`;
     });
 
-    document.getElementById("tabela_area").innerHTML = html + "</tbody></table>";
-
-    document.getElementById("kpi_fat").innerText = "R$ " + f.toLocaleString('pt-BR',{minimumFractionDigits:2});
-    document.getElementById("kpi_est").innerText = "R$ " + e.toLocaleString('pt-BR',{minimumFractionDigits:2});
-    document.getElementById("kpi_orc").innerText = "R$ " + o.toLocaleString('pt-BR',{minimumFractionDigits:2});
+    document.getElementById("tabela_area").innerHTML = html + `</tbody></table>`;
+    document.getElementById("kpi_fat").innerText = "R$ " + f.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    document.getElementById("kpi_est").innerText = "R$ " + e.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    document.getElementById("kpi_orc").innerText = "R$ " + o.toLocaleString('pt-BR', {minimumFractionDigits:2});
+    document.getElementById("kpi_orc").className = o < 0 ? "negativo" : "positivo";
 }
 
 function atualizarGraficos(lista) {
@@ -189,15 +185,46 @@ function atualizarGraficos(lista) {
     if (chartPizza) chartPizza.destroy();
     if (chartBarras) chartBarras.destroy();
 
-    chartPizza = new Chart(document.getElementById('chartPizza'), {
+    const ctxP = document.getElementById('chartPizza').getContext('2d');
+    chartPizza = new Chart(ctxP, {
         type: 'doughnut',
-        data: { labels, datasets: [{ data: orcData }] }
+        data: {
+            labels: labels,
+            datasets: [{ data: orcData, backgroundColor: ['#0b57d0', '#fbbc04', '#34a853', '#ea4335'] }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } }, maintainAspectRatio: false }
     });
 
-    chartBarras = new Chart(document.getElementById('chartBarras'), {
+    const ctxB = document.getElementById('chartBarras').getContext('2d');
+    chartBarras = new Chart(ctxB, {
         type: 'bar',
-        data: { labels, datasets: [{ label: 'Faturamento', data: fatData }] }
+        data: {
+            labels: labels,
+            datasets: [{ label: 'Faturamento', data: fatData, backgroundColor: '#0b57d0' }]
+        },
+        options: { scales: { y: { beginAtZero: true } }, maintainAspectRatio: false }
     });
+}
+
+function exportarExcel() {
+    const ws = XLSX.utils.json_to_sheet(dadosFiltrados.map(i => ({
+        "COMPRADOR": i.comp, "FORNECEDOR": i.forn, "FATURAMENTO": i.fat, "ESTOQUE": i.est, "DIAS ESTOQUE": Math.round(i.dias), "META DE COMPRA": i.orc
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Dados");
+    XLSX.writeFile(wb, "Painel_Compras_Lucas_Wellida.xlsx");
+}
+
+function exportarPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'mm', 'a4');
+    doc.text("Relatório de Planejamento - Meta de Compras", 14, 15);
+    doc.autoTable({
+        head: [["Comprador", "Fornecedor", "Faturamento", "Estoque", "Dias Est.", "Meta Compra"]],
+        body: dadosFiltrados.map(i => [i.comp, i.forn, i.fat.toFixed(2), i.est.toFixed(2), Math.round(i.dias), i.orc.toFixed(2)]),
+        startY: 20, theme: 'grid'
+    });
+    doc.save("Relatorio_Compras.pdf");
 }
 
 carregar();
