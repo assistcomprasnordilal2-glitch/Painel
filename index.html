@@ -3,87 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchase Panel Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .dashboard {
-            max-width: 1200px;
-            margin: auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-        }
-        .kpi {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .kpi div {
-            flex: 1;
-            padding: 20px;
-            background: #eaeaea;
-            border-radius: 5px;
-            margin: 0 10px;
-            text-align: center;
-        }
-        .charts {
-            margin-bottom: 20px;
-        }
-        .chart {
-            height: 300px;
-            margin: 20px 0;
-        }
-        .filters {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .csv-integration {
-            margin-top: 20px;
-        }
-    </style>
+    <title>Painel de Compras</title>
+    <!-- Include necessary libraries for charts and Google Sheets integration -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-    <div class="dashboard">
-        <h1>Purchase Panel Dashboard</h1>
-        <div class="kpi">
-            <div>
-                <h2>Total Sales</h2>
-                <p>$10,000</p>
-            </div>
-            <div>
-                <h2>New Customers</h2>
-                <p>150</p>
-            </div>
-            <div>
-                <h2>Revenue</h2>
-                <p>$8,000</p>
-            </div>
-        </div>
-        <div class="charts">
-            <div class="chart" id="salesChart">Sales Chart</div>
-            <div class="chart" id="revenueChart">Revenue Chart</div>
-        </div>
-        <div class="filters">
-            <input type="date" id="startDate" />
-            <input type="date" id="endDate" />
-            <button id="filterBtn">Filter</button>
-        </div>
-        <div class="csv-integration">
-            <button id="exportCsvBtn">Export to CSV</button>
-        </div>
+    <h1>Painel de Compras</h1>
+    <div id="filters">
+        <label for="dateFilter">Date:</label>
+        <input type="date" id="dateFilter">
+        <button onclick="loadData()">Apply Filter</button>
     </div>
+    <canvas id="myChart" width="400" height="200"></canvas>
     <script>
-        // JavaScript for charts and filters will go here
+        function loadData() {
+            const date = document.getElementById('dateFilter').value;
+            // Load data from Google Sheets using fetch API
+            fetch('https://sheets.googleapis.com/v4/spreadsheets/YOUR_SHEET_ID/values/YOUR_RANGE?key=YOUR_API_KEY')
+                .then(response => response.json())
+                .then(data => {
+                    // Process data and update chart
+                    updateChart(data);
+                })
+                .catch(error => console.error('Error loading data:', error));
+        }
+        function updateChart(data) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.values[0], // Assuming first row is labels
+                    datasets: [{
+                        label: 'Dataset',
+                        data: data.values[1], // Assuming second row is data
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
