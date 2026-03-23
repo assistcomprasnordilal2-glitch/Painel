@@ -4,9 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Panel Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .dashboard {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .kpi {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .kpi div {
+            flex: 1;
+            padding: 20px;
+            background: #eaeaea;
+            border-radius: 5px;
+            margin: 0 10px;
+            text-align: center;
+        }
+        .charts {
+            margin-bottom: 20px;
+        }
+        .chart {
+            height: 300px;
+            margin: 20px 0;
+        }
+        .filters {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .csv-integration {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Purchase Panel Dashboard</h1>
-    <p>This is where you can manage your purchases.</p>
+    <div class="dashboard">
+        <h1>Purchase Panel Dashboard</h1>
+        <div class="kpi">
+            <div>
+                <h2>Total Sales</h2>
+                <p>$10,000</p>
+            </div>
+            <div>
+                <h2>New Customers</h2>
+                <p>150</p>
+            </div>
+            <div>
+                <h2>Revenue</h2>
+                <p>$8,000</p>
+            </div>
+        </div>
+        <div class="charts">
+            <div class="chart" id="salesChart">Sales Chart</div>
+            <div class="chart" id="revenueChart">Revenue Chart</div>
+        </div>
+        <div class="filters">
+            <input type="date" id="startDate" />
+            <input type="date" id="endDate" />
+            <button id="filterBtn">Filter</button>
+        </div>
+        <div class="csv-integration">
+            <button id="exportCsvBtn">Export to CSV</button>
+        </div>
+    </div>
+    <script>
+        // JavaScript for charts and filters will go here
+    </script>
 </body>
 </html>
